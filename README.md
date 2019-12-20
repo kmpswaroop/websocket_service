@@ -1,4 +1,4 @@
-websocket_servce
+websocket_service
 =====
 
 An OTP application
