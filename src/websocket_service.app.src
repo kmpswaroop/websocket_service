@@ -1,11 +1,13 @@
-{application, websocket_servce,
+{application, websocket_service,
  [{description, "An OTP application"},
   {vsn, "0.1.0"},
   {registered, []},
-  {mod, {websocket_servce_app, []}},
+  {mod, {websocket_service_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    cowboy,
+    jiffy
    ]},
   {env,[]},
   {modules, []},
