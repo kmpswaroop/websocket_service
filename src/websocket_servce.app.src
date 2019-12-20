@@ -5,7 +5,9 @@
   {mod, {websocket_servce_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    cowboy,
+    jiffy
    ]},
   {env,[]},
   {modules, []},
