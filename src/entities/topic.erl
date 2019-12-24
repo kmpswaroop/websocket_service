@@ -66,7 +66,8 @@ publish(Topic, Data) ->
 	     );
 	_ ->
 	    ok
-    end.
+    end,
+    ok.
 
 
 handle_call(_Request, _From, State) ->
