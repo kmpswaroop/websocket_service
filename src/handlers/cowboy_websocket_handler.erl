@@ -78,6 +78,8 @@ handle_event({[
 	       {<<"client_id">>, ClientId},
 	       {<<"topic">>, Topic}
 	      ]}) ->
+    io:format(Topic),
+    io:format(ClientId),
     topic:remove_subscription(Topic, ClientId),
     {ok, ClientId};
 handle_event(_) ->
