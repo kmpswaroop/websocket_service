@@ -20,21 +20,33 @@
 -define(SERVER, ?MODULE).
 
 
+-spec start_link() ->
+			{ok, pid()} |
+			{error, {already_started, pid()}} |
+			{error, term()} |
+			ignore.
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?SERVER, [], []).
 
 
+-spec init(term()) ->
+		  {ok, term()}.
 init([]) ->
     init_ets(),
     {ok, #{}}.
 
 
+-spec init_ets() ->
+		      atom().
 init_ets() ->
     ets:new(topic, 
 	    [set, public, named_table, {write_concurrency, true}]
 	   ).
 
 
+-spec add_subscription(binary(), 
+		       binary()) -> 
+			      ok.
 add_subscription(Topic, ClientId) ->
     case ets:lookup(topic, Topic) of
 	[{Topic, Clients}] ->
@@ -45,6 +57,10 @@ add_subscription(Topic, ClientId) ->
     ok.
 
 
+-spec remove_subscription(binary(), 
+			  binary()) ->
+				 ok |
+				 {error, topic_not_found}.
 remove_subscription(Topic, ClientId) ->
     case ets:lookup(topic, Topic) of
 	[{Topic, Clients}] ->
@@ -55,6 +71,8 @@ remove_subscription(Topic, ClientId) ->
     end.
 
 
+-spec publish(binary(), binary()) ->
+		     ok.
 publish(Topic, Data) ->
     case ets:lookup(topic, Topic) of
 	[{Topic, Clients}] ->
@@ -70,21 +88,34 @@ publish(Topic, Data) ->
     ok.
 
 
+-spec handle_call(term(), {pid(), term()}, term()) ->
+			 {reply, ignored, term()}.
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
 
+-spec handle_cast(term(), term()) ->
+			 {noreply, term()}.
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
 
+-spec handle_info(term() | timeout(), term()) ->
+			 {noreply, term()}.
 handle_info(_Info, State) ->
     {noreply, State}.
 
 
+-spec terminate(normal | shutdown | {shutdown, term()} | term(),
+	        term()) ->
+		       any().
 terminate(_Reason, _State) ->
-    ets:delete(topic).
+    ets:delete(client).
 
 
+-spec code_change(term() | {down, term()},
+		  term(),
+		  term()) ->
+			 {ok, term()}.
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
