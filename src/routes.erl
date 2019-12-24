@@ -6,6 +6,8 @@
 	]).
 
 
+-spec get() ->
+		 cowboy_router:routes().
 get() ->
     [
      {'_', [

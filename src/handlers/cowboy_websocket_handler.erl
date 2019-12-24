@@ -14,14 +14,20 @@
 	]).
 
 
-init(Req, Opts) ->
-    {cowboy_websocket, Req, Opts}.
+-spec init(cowboy_req:req(), any()) ->
+		  {atom(), cowboy_req:req(), any()}.
+init(Req, State) ->
+    {cowboy_websocket, Req, State}.
 
 
+-spec websocket_init(any()) ->
+			    {ok, map()}.
 websocket_init(_State) ->
-    {[], maps:new()}.
+    {ok, maps:new()}.
 
 
+-spec websocket_handle({text, binary()}, any()) ->
+			      {reply, {text | close, iodata()}, any()}.
 websocket_handle({text, Message}, State) ->
     case handle_event(jiffy:decode(Message)) of
 	{ok, ClientId} -> 
@@ -41,23 +47,33 @@ websocket_handle(_, State) ->
     {reply, {close, Out}, State}.
 
 
+-spec websocket_info({text, iodata()}, any()) ->
+			    {reply, {text, iodata()}, any()} |
+			    {ok, any()}.
 websocket_info({text, Text}, State) ->
     {reply, {text, Text}, State};
 websocket_info(_Info, State) ->
     {ok, State}.
 
 
+-spec terminate(atom(), map(), any()) ->
+		       ok.
 terminate(_Reason, _PartialReq, State) ->
     ClientId = maps:get(client_id, State),
     ok = client:disconnect(ClientId),
     ok.
 
 
+-spec send(iodata(), {pid, pid()}) ->
+		  ok.
 send(Data, {pid, Pid}) ->
     Pid ! {text, Data},
     ok.
 
 
+-spec handle_event(jiffy:json_value()) ->
+			  {ok, binary()} |
+			  {error, binary()}.
 handle_event({[
 	       {<<"type">>, <<"connect">>},
 	       {<<"version">>, _Version},
